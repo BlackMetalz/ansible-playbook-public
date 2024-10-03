@@ -1,0 +1,15 @@
+# Handlers section
+- name: Reload systemd daemon after rendering redis-server service template
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  tags: redis_service
+
+- name: Reload systemd daemon after rendering redis-sentinel service template {{ serviceName }}
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  tags: redis_sentinel_service
+
+- name: Reload systemd daemon for Redis exporter
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  tags: redis_exporter

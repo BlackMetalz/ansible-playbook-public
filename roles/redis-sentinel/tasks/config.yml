@@ -1,0 +1,116 @@
+- block:
+  # Redis installation
+  - name: Update redis config {{ redisName }}.conf with template for port {{ redisPort }}
+    template:
+      src: templates/redis.conf.j2
+      dest: "{{ redisConfigPath }}"
+      owner: redis
+      group: redis
+      mode: 0644
+    tags: redis_conf
+
+  - name: Render redis-server service template for port {{ redisPort }}
+    template:
+      src: templates/redis-server.service.j2
+      dest: /lib/systemd/system/redis-server-{{ redisPort }}.service
+      owner: root
+      group: root
+      mode: 0644
+    tags: redis_service
+    notify: Reload systemd daemon after rendering redis-server service template
+
+  - name: Enable and start redis-server-{{ redisPort }} service {{ serviceName }}
+    ansible.builtin.systemd:
+      name: redis-server-{{ redisPort }}.service
+      enabled: yes
+      state: started
+    tags: redis_service
+
+  - name: Wait Redis port {{ redisPort }} Started
+    wait_for:
+      port: "{{ redisPort }}"
+
+  # Exporter of Redis
+  - name: Download Redis exporter version {{ exporterVersion }}
+    get_url:
+      url: https://github.com/oliver006/redis_exporter/releases/download/v{{ exporterVersion }}/redis_exporter-v{{ exporterVersion }}.linux-amd64.tar.gz
+      dest: /tmp/redis_exporter-v{{ exporterVersion }}.linux-amd64.tar.gz
+    tags: redis_exporter
+
+  - name: Extract Redis exporter
+    ansible.builtin.unarchive:
+      src: /tmp/redis_exporter-v{{ exporterVersion }}.linux-amd64.tar.gz
+      dest: /tmp/
+      remote_src: yes
+      creates: /tmp/redis_exporter-v{{ exporterVersion }}.linux-amd64/redis_exporter 
+    tags: redis_exporter
+    # creates parameter with the ansible.builtin.unarchive module. 
+    # This parameter specifies a path to a file that will be checked before running the task. If the file exists, the task will be skipped
+
+  - name: Move Redis exporter binary to /usr/local/bin
+    ansible.builtin.command:
+      cmd: mv /tmp/redis_exporter-v{{ exporterVersion }}.linux-amd64/redis_exporter /usr/local/bin/redis_exporter
+    args:
+      creates: /usr/local/bin/redis_exporter
+    tags: redis_exporter
+
+  - name: Create Redis exporter systemd service for redis-exporter-{{ redisPort }} on exporter port {{ exporterPort }}
+    ansible.builtin.template:
+      src: "templates/redis_exporter.service.j2"
+      dest: "/etc/systemd/system/redis-exporter-{{ redisPort }}.service"
+      owner: root
+      group: root
+      mode: '0644'
+    tags: redis_exporter
+    notify: Reload systemd daemon for Redis exporter
+
+  - name: Enable and start redis-exporter-{{ redisPort }} service on exporter port {{ exporterPort }}
+    ansible.builtin.systemd:
+      name: redis-exporter-{{ redisPort }}
+      enabled: yes
+      state: started
+    tags: redis_exporter
+  
+  when: install_redis | bool
+  
+# SENTINEL CONFIG TASK
+- block:
+  - name: Setup notify script for Redis sentinel {{ sentinelName }} {{ sentinelPort }} with template
+    ansible.builtin.template:
+      src: templates/notify_redis.py.j2
+      dest: "/opt/notify_redis_{{ redisPort }}.py"
+      owner: root
+      group: root
+      mode: 0755
+    tags: sentinel_conf, sentinel_notify
+
+  - name: Update sentinel config sentinel-{{ serviceName }}.conf with template for sentinel port {{ sentinelPort }}
+    template:
+      src: templates/sentinel.conf.j2
+      dest: "{{ sentinelConfigPath }}"
+      owner: redis
+      group: redis
+      mode: 0644
+    tags: sentinel_conf
+
+  - name: Render redis-sentinel service template for port {{ sentinelPort }}
+    template:
+      src: templates/redis-sentinel.service.j2
+      dest: /lib/systemd/system/redis-sentinel-{{ sentinelPort }}.service
+      owner: root
+      group: root
+      mode: 0644
+    tags: sentinel_conf
+    notify: Reload systemd daemon after rendering redis-sentinel service template {{ serviceName }}
+
+  - name: Enable and start redis-sentinel-{{ sentinelPort }} service
+    ansible.builtin.systemd:
+      name: redis-sentinel-{{ sentinelPort }}.service
+      enabled: yes
+      state: started
+    tags: sentinel_conf
+
+  - name: Wait Redis sentinel port {{ sentinelPort }} Started
+    wait_for:
+      port: "{{ sentinelPort }}"
+  when: install_sentinel | bool

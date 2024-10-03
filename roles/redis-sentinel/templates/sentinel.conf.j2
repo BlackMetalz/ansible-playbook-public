@@ -1,0 +1,26 @@
+# General config
+bind 0.0.0.0
+protected-mode no
+port {{ sentinelPort }}
+daemonize yes
+supervised systemd
+pidfile "/run/sentinel/redis-sentinel-{{redisPort}}.pid"
+loglevel notice
+logfile "{{ sentinelLog }}"
+dir "{{ dataDir }}"
+acllog-max-len 128
+requirepass {{ redis_password }}
+
+
+# Sentinel Config 
+sentinel deny-scripts-reconfig yes
+sentinel resolve-hostnames no
+sentinel announce-hostnames no
+# We don't use notification script duo duplication. We use check_log plugin in CMK to handle this fucking event!
+# sentinel notification-script {{ sentinelName }} /opt/notify_redis_{{ redisPort }}.py
+# Sentinel important config
+sentinel monitor {{ sentinelName }} {{ masterHost }} {{ redisPort }} 2
+sentinel auth-pass {{ sentinelName }} {{ redis_password }}
+sentinel down-after-milliseconds {{ sentinelName }} {{ down_after_milliseconds }}
+sentinel failover-timeout {{ sentinelName }} {{ failoverTimeout }}
+sentinel parallel-syncs {{ sentinelName }} 1

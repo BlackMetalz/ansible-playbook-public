@@ -1,0 +1,8 @@
+- hosts: all
+  become: yes
+  vars:
+    redis_setup: true
+    redis_config: false
+  roles:
+  - redis-sentinel
+

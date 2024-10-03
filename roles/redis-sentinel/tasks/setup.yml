@@ -1,0 +1,97 @@
+- name: Ensure vm.overcommit_memory is set to 1
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    state: present
+    reload: yes
+
+- name: Persist vm.overcommit_memory setting
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^vm.overcommit_memory'
+    line: 'vm.overcommit_memory = 1'
+    state: present
+
+- name: Ensure redis user and group exist
+  ansible.builtin.group:
+    name: redis
+    state: present
+
+- name: Ensure redis user exists
+  ansible.builtin.user:
+    name: redis
+    group: redis
+    create_home: no
+    shell: /bin/false
+    state: present
+
+- name: Add redis signing key
+  apt_key:
+    url: https://packages.redis.io/gpg
+    keyring: /usr/share/keyrings/redis-archive-keyring.gpg
+
+- name: Add redis repo
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install specific version of redis-server, redis-sentinel and redis-tools {{ redisVersion }}
+  ansible.builtin.apt:
+    name:
+      - redis-server={{ redisVersion }}
+      - redis-tools={{ redisVersion }}
+      - redis-sentinel={{ redisVersion }}
+    state: present
+    update_cache: yes
+
+- name: Install python3-pip for script notify
+  ansible.builtin.apt:
+    name:
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Hold redis-server package
+  ansible.builtin.shell: |
+    apt-mark showhold | grep -E '^redis-server$' || apt-mark hold redis-server
+  changed_when: false
+
+- name: Hold redis-tools package
+  ansible.builtin.shell: |
+    apt-mark showhold | grep -E '^redis-tools$' || apt-mark hold redis-tools
+  changed_when: false
+
+- name: Hold redis-sentinel package
+  ansible.builtin.shell: |
+    apt-mark showhold | grep -E '^redis-sentinel$' || apt-mark hold redis-sentinel
+  changed_when: false
+
+- name: Stop, disable service redis-server default
+  ansible.builtin.systemd:
+    name: redis-server
+    enabled: no
+    masked: no
+    state: stopped
+
+- name: Stop, disable service redis-sentinel default
+  ansible.builtin.systemd:
+    name: redis-sentinel
+    enabled: no
+    masked: no
+    state: stopped
+
+- name: create dataDir for Redis data
+  ansible.builtin.file:
+    path: "{{ dataDir }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: 0755
+
+- name: create configDir for Redis config
+  ansible.builtin.file:
+    path: "{{ configDir }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: 0755

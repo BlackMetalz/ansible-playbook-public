@@ -1,0 +1,12 @@
+# Haproxy Config
+haproxyConfigFile: dev/redis_test/haproxy.cfg
+# Redis Config
+dataDir: "/data/redis-data"
+configDir: "/data/redis-config"
+# Fixed version for Ubuntu 22 for an example.
+redisVersion: "6:6.2.14-1rl1~jammy1"
+# Sentinel config
+failoverTimeout: 30000
+down_after_milliseconds: 5000
+# Others
+cluster: "kienlt-test-redis-cluster"

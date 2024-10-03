@@ -1,0 +1,66 @@
+- name: Install HAProxy
+  apt:
+    name: haproxy
+    state: present
+
+- name: Hold HAProxy package
+  ansible.builtin.shell: |
+    apt-mark showhold | grep -E '^haproxy$' || apt-mark hold haproxy
+  changed_when: false
+
+- name: Update HAProxy configuration file
+  template:
+    src: "{{ role_path }}/files/{{ haproxyConfigFile }}"
+    dest: /etc/haproxy/haproxy.cfg
+    mode: '0644'
+  notify: reload haproxy
+  tags: haproxy_conf
+
+- name: Enable HAProxy service
+  ansible.builtin.systemd:
+    name: haproxy
+    enabled: yes
+    state: started
+
+- name: Ensure HAProxy log directory exists
+  file:
+    path: /var/log/haproxy
+    state: directory
+    owner: root
+    group: adm
+    mode: '0755'
+
+- name: Ensure HAProxy log file exists with correct ownership and permissions
+  file:
+    path: /var/log/haproxy/haproxy.log
+    state: touch
+    owner: syslog
+    group: adm
+    mode: '0640'
+
+- name: Update 49-haproxy.conf
+  copy:
+    src: "{{ role_path }}/files/{{ haproxyRsyslog }}"
+    dest: /etc/rsyslog.d/49-haproxy.conf
+    mode: '0644'
+  notify: Restart rsyslog service
+
+- name: Configure logrotate for HAProxy logs
+  copy:
+    dest: /etc/logrotate.d/haproxy
+    content: |
+      /var/log/haproxy/haproxy.log {
+          daily
+          rotate 1
+          compress
+          missingok
+          notifempty
+          create 0640 syslog adm
+          sharedscripts
+          postrotate
+              /usr/lib/rsyslog/rsyslog-rotate
+              systemctl restart rsyslog > /dev/null
+          endscript
+      }
+    mode: '0644'
+  notify: reload logrotate

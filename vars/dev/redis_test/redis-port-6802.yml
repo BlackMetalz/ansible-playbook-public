@@ -1,0 +1,25 @@
+# Service Name. Format redis-service-name
+serviceName: svc-name-3
+# Redis Config
+redisPort: 6802
+redis_password: "pass_here"
+masterUser: masterUser
+redisName: "{{ redisPort }}-redis-{{ serviceName }}"
+redisConfigName: "{{ redisName }}.conf"
+redisConfigPath: "{{ configDir }}/{{ redisConfigName }}"
+dbfilename: "{{ redisName }}.rdb"
+maxMemory: 2gb
+maxMemoryPolicy: allkeys-lru
+redisLog: /var/log/redis/{{ redisName }}.log
+# Redis Sentinel Config
+sentinelPort: 8802
+sentinelName: "{{ sentinelPort }}-sentinel-{{ serviceName }}"
+sentinelConfigName: "{{ sentinelName }}.conf"
+sentinelConfigPath: "{{ configDir }}/{{ sentinelConfigName }}"
+sentinelLog: /var/log/redis/{{ sentinelName }}.log
+# Exporter of Redis
+exporterVersion: "1.62.0"
+exporterPort: 9802
+# Notify Telegram:
+telegramToken: "token_here"
+telegramChatId: "chat_id_here"

@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+import requests
+import sys
+import socket
+
+def send_telegram_message(bot_token, chat_id, message):
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        'chat_id': chat_id,
+        'text': message,
+        'parse_mode': 'Markdown'
+    }
+    response = requests.post(url, data=payload)
+    return response.json()
+
+def generate_message(arg, host_ip, hostname, args):
+    base_message = (
+        f"*Trigger Event:* {arg}\n"
+        f"*Service:* {{ serviceName }}\n"
+        f"*Port:* {{ redisPort }}\n"
+        f"*Cluster:* {{ cluster }}\n"
+        f"*Sentinel IP:* {host_ip}\n"
+        f"*Hostname:* {hostname}\n"
+        f"*Full Args:* {args}"
+    )
+    
+    if arg == "+odown":
+        return f"*Redis Sentinel failover occurred!*\n{base_message}"
+    elif arg == "+sdown":
+        return f"*Redis Slave/Sentinel/master is down, please check!*\n{base_message}"
+    elif arg == "-sdown":
+        return f"*Redis Slave/Sentinel/master is up, please review to make sure it works!*\n{base_message}"
+    else:
+        return None
+
+def main(args):
+    bot_token = "{{ telegramToken }}"
+    chat_id = "{{ telegramChatId }}"
+    host_ip = socket.gethostbyname(socket.gethostname())
+    hostname = socket.gethostname()
+    
+    # Print full args for debugging
+    print(f"Full args: {args}")
+
+    for arg in args:
+        message = generate_message(arg, host_ip, hostname, args)
+        if message:
+            print(f"Sending message for arg: {arg}")
+            send_telegram_message(bot_token, chat_id, message)
+
+main(sys.argv)

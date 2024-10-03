@@ -1,0 +1,7 @@
+- name: Include setup tasks
+  include_tasks: setup.yml
+  when: redis_setup
+
+- name: Include config tasks
+  include_tasks: config.yml
+  when: redis_config

@@ -1,0 +1,16 @@
+[Unit]
+Description=Redis Exporter!
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=/usr/local/bin/redis_exporter \
+    -web.listen-address ":{{ exporterPort }}" \
+    -redis.addr "redis://127.0.0.1:{{redisPort}}" \
+    -redis.password "{{ redis_password }}"
+
+[Install]
+WantedBy=multi-user.target
