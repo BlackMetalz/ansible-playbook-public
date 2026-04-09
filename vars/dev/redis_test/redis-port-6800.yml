@@ -1,25 +1,25 @@
 # Service Name. Format redis-service-name
-serviceName: svc-name-1
+service_name: svc-name-1
 # Redis Config
-redisPort: 6800
+redis_port: 6800
 redis_password: "pass_here"
-masterUser: masterUser
-redisName: "{{ redisPort }}-redis-{{ serviceName }}"
-redisConfigName: "{{ redisName }}.conf"
-redisConfigPath: "{{ configDir }}/{{ redisConfigName }}"
-dbfilename: "{{ redisName }}.rdb"
-maxMemory: 2gb
-maxMemoryPolicy: allkeys-lru
-redisLog: /var/log/redis/{{ redisName }}.log
+master_user: master_user
+redis_name: "{{ redis_port }}-redis-{{ service_name }}"
+redis_config_name: "{{ redis_name }}.conf"
+redis_config_path: "{{ config_dir }}/{{ redis_config_name }}"
+db_filename: "{{ redis_name }}.rdb"
+max_memory: 2gb
+max_memory_policy: allkeys-lru
+redis_log: /var/log/redis/{{ redis_name }}.log
 # Redis Sentinel Config
-sentinelPort: 8800
-sentinelName: "{{ sentinelPort }}-sentinel-{{ serviceName }}"
-sentinelConfigName: "{{ sentinelName }}.conf"
-sentinelConfigPath: "{{ configDir }}/{{ sentinelConfigName }}"
-sentinelLog: /var/log/redis/{{ sentinelName }}.log
+sentinel_port: 8800
+sentinel_name: "{{ sentinel_port }}-sentinel-{{ service_name }}"
+sentinel_config_name: "{{ sentinel_name }}.conf"
+sentinel_config_path: "{{ config_dir }}/{{ sentinel_config_name }}"
+sentinel_log: /var/log/redis/{{ sentinel_name }}.log
 # Exporter of Redis
-exporterVersion: "1.62.0"
-exporterPort: 9800
+exporter_version: "1.62.0"
+exporter_port: 9800
 # Notify Telegram:
-telegramToken: "token_here"
-telegramChatId: "chat_id_here"
+telegram_token: "token_here"
+telegram_chat_id: "chat_id_here"

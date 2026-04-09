@@ -1,16 +1,16 @@
 # General Config
 bind 0.0.0.0
 supervised systemd
-port {{ redisPort }}
+port {{ redis_port }}
 requirepass {{ redis_password }}
 masterauth {{ redis_password }}
-dbfilename {{ dbfilename }}
-dir "{{ dataDir }}"
-logfile "{{ redisLog }}"
+dbfilename {{ db_filename }}
+dir "{{ data_dir }}"
+logfile "{{ redis_log }}"
 
 # Memory Config
-maxmemory {{ maxMemory }}
-maxmemory-policy {{ maxMemoryPolicy }}
+maxmemory {{ max_memory }}
+maxmemory-policy {{ max_memory_policy }}
 
 # Optimize for threads
 io-threads 4
@@ -20,6 +20,6 @@ io-threads-do-reads yes
 replica-priority 100
 {% if hostvars[inventory_hostname]['role'] != "master" %}
 {% for host in vars['ansible_play_hosts_all'] if hostvars[host]['role'] == "master" %}
-replicaof {{ hostvars[host]['ansible_host'] }} {{ redisPort }}
+replicaof {{ hostvars[host]['ansible_host'] }} {{ redis_port }}
 {% endfor %}
 {% endif %}

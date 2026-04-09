@@ -16,8 +16,8 @@ def send_telegram_message(bot_token, chat_id, message):
 def generate_message(arg, host_ip, hostname, args):
     base_message = (
         f"*Trigger Event:* {arg}\n"
-        f"*Service:* {{ serviceName }}\n"
-        f"*Port:* {{ redisPort }}\n"
+        f"*Service:* {{ service_name }}\n"
+        f"*Port:* {{ redis_port }}\n"
         f"*Cluster:* {{ cluster }}\n"
         f"*Sentinel IP:* {host_ip}\n"
         f"*Hostname:* {hostname}\n"
@@ -34,8 +34,8 @@ def generate_message(arg, host_ip, hostname, args):
         return None
 
 def main(args):
-    bot_token = "{{ telegramToken }}"
-    chat_id = "{{ telegramChatId }}"
+    bot_token = "{{ telegram_token }}"
+    chat_id = "{{ telegram_chat_id }}"
     host_ip = socket.gethostbyname(socket.gethostname())
     hostname = socket.gethostname()
     

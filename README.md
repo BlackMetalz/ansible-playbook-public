@@ -1,3 +1,7 @@
+### Ansible Convention
+
+- snake_case for variable.
+
 ### Redis Sentinel guide
 - Design example
 ```

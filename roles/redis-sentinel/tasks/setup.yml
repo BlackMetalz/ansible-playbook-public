@@ -35,12 +35,12 @@
     repo: "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_distribution_release }} main"
     state: present
 
-- name: Install specific version of redis-server, redis-sentinel and redis-tools {{ redisVersion }}
+- name: Install specific version of redis-server, redis-sentinel and redis-tools {{ redis_version }}
   ansible.builtin.apt:
     name:
-      - redis-server={{ redisVersion }}
-      - redis-tools={{ redisVersion }}
-      - redis-sentinel={{ redisVersion }}
+      - redis-server={{ redis_version }}
+      - redis-tools={{ redis_version }}
+      - redis-sentinel={{ redis_version }}
     state: present
     update_cache: yes
 
@@ -80,17 +80,17 @@
     masked: no
     state: stopped
 
-- name: create dataDir for Redis data
+- name: create data_dir for Redis data
   ansible.builtin.file:
-    path: "{{ dataDir }}"
+    path: "{{ data_dir }}"
     state: directory
     owner: redis
     group: redis
     mode: 0755
 
-- name: create configDir for Redis config
+- name: create config_dir for Redis config
   ansible.builtin.file:
-    path: "{{ configDir }}"
+    path: "{{ config_dir }}"
     state: directory
     owner: redis
     group: redis

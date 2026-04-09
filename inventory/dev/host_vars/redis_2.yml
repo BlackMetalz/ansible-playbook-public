@@ -3,4 +3,4 @@ install_sentinel: true
 
 # Redis config
 role: master
-masterHost: "{{ hostvars['redis_1']['ansible_host'] }}"
+master_host: "{{ hostvars['redis_1']['ansible_host'] }}"

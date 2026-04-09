@@ -1,1 +1,1 @@
-haproxyRsyslog: 49-haproxy.conf
+haproxy_rsyslog: 49-haproxy.conf

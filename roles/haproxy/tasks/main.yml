@@ -10,7 +10,7 @@
 
 - name: Update HAProxy configuration file
   template:
-    src: "{{ role_path }}/files/{{ haproxyConfigFile }}"
+    src: "{{ role_path }}/files/{{ haproxy_config_file }}"
     dest: /etc/haproxy/haproxy.cfg
     mode: '0644'
   notify: reload haproxy
@@ -40,7 +40,7 @@
 
 - name: Update 49-haproxy.conf
   copy:
-    src: "{{ role_path }}/files/{{ haproxyRsyslog }}"
+    src: "{{ role_path }}/files/{{ haproxy_rsyslog }}"
     dest: /etc/rsyslog.d/49-haproxy.conf
     mode: '0644'
   notify: Restart rsyslog service

@@ -43,7 +43,7 @@ Each Redis instance uses a calculated set of 4 ports (do not use ports > 10000):
 
 - `inventory/{env}/hosts.ini` — host groups and connection settings
 - `inventory/{env}/group_vars/` — shared config per host group (Redis version, paths, HAProxy config file path)
-- `inventory/{env}/host_vars/` — per-host flags: `install_redis`, `install_sentinel`, `role` (master/slave), `masterHost`
+- `inventory/{env}/host_vars/` — per-host flags: `install_redis`, `install_sentinel`, `role` (master/slave), `master_host`
 - `vars/{env}/{group}/redis-port-XXXX.yml` — per-port instance config (service name, passwords, memory limits, Telegram alerting)
 
 ### HAProxy role

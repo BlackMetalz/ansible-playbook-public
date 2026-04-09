@@ -5,9 +5,9 @@ Documentation=http://redis.io/documentation, man:redis-sentinel(1)
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/redis-sentinel {{ sentinelConfigPath }}
+ExecStart=/usr/bin/redis-sentinel {{ sentinel_config_path }}
 ExecStop=/bin/kill -s TERM $MAINPID
-PIDFile=/run/sentinel/redis-sentinel-{{ redisPort }}.pid
+PIDFile=/run/sentinel/redis-sentinel-{{ redis_port }}.pid
 TimeoutStopSec=0
 Restart=always
 User=redis
@@ -21,7 +21,7 @@ LimitNOFILE=65535
 PrivateDevices=yes
 ProtectHome=yes
 ReadOnlyDirectories=/
-ReadWriteDirectories=-{{ dataDir }}
+ReadWriteDirectories=-{{ data_dir }}
 ReadWriteDirectories=-/var/log/redis
 ReadWriteDirectories=-/run/sentinel
 
@@ -39,7 +39,7 @@ RestrictNamespaces=true
 # permit writing there by default. If you are not using this feature, it is
 # recommended that you replace the following lines with "ProtectSystem=full".
 ProtectSystem=true
-ReadWriteDirectories=-{{ configDir }}
+ReadWriteDirectories=-{{ config_dir }}
 
 [Install]
 WantedBy=multi-user.target
