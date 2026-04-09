@@ -17,7 +17,7 @@
       group: root
       mode: 0644
     tags: redis_service
-    notify: Reload systemd daemon after rendering redis-server service template
+    notify: Reload systemd daemon
 
   - name: Enable and start redis-server-{{ redis_port }} service {{ service_name }}
     ansible.builtin.systemd:
@@ -62,7 +62,7 @@
       group: root
       mode: '0644'
     tags: redis_exporter
-    notify: Reload systemd daemon for Redis exporter
+    notify: Reload systemd daemon
 
   - name: Enable and start redis-exporter-{{ redis_port }} service on exporter port {{ exporter_port }}
     ansible.builtin.systemd:
@@ -101,7 +101,7 @@
       group: root
       mode: 0644
     tags: sentinel_conf
-    notify: Reload systemd daemon after rendering redis-sentinel service template {{ service_name }}
+    notify: Reload systemd daemon
 
   - name: Enable and start redis-sentinel-{{ sentinel_port }} service
     ansible.builtin.systemd:
