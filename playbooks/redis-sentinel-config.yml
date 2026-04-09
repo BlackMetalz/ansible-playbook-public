@@ -1,5 +1,12 @@
 - hosts: all
   become: yes
+  pre_tasks:
+    - name: Validate required variables
+      assert:
+        that:
+          - redis_port is defined
+          - service_name is defined
+        fail_msg: "Missing required vars. Usage: -e @vars/{env}/{group}/redis-port-XXXX.yml"
   vars:
     redis_setup: false
     redis_config: true
