@@ -2,7 +2,7 @@
 
 - for Setup
 ```
-ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/redis-sentinel-setup.yaml --check
+ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/redis-sentinel-setup.yml --check
 PLAY [all] *********************************************************************************************************************************************************************************************************
 
 TASK [Gathering Facts] *********************************************************************************************************************************************************************************************
@@ -101,7 +101,7 @@ redis_3                    : ok=14   changed=0    unreachable=0    failed=0    s
 
 - for config specific port
 ```
-ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/redis-sentinel-config.yaml -e @vars/dev/redis_test/redis-port-6800.yml
+ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/redis-sentinel-config.yml -e @vars/dev/redis_test/redis-port-6800.yml
 
 PLAY [all] *********************************************************************************************************************************************************************************************************
 
@@ -210,7 +210,7 @@ redis_3                    : ok=8    changed=3    unreachable=0    failed=0    s
 
 - Haproxy playbook output example
 ```
-ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/haproxy.yaml 
+ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/haproxy.yml 
 PLAY [all] *********************************************************************************************************************************************************************************************************
 
 TASK [Gathering Facts] *********************************************************************************************************************************************************************************************
@@ -271,7 +271,7 @@ redis_3                    : ok=9    changed=3    unreachable=0    failed=0    s
 
 - Update Haproxy and reload only
 ```
-ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/haproxy.yaml --tags "haproxy_conf" 
+ansible-playbook -i inventory/dev/hosts.ini -l redis_test playbooks/haproxy.yml --tags "haproxy_conf" 
 
 PLAY [all] *********************************************************************************************************************************************************************************************************
 
