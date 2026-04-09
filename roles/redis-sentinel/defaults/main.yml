@@ -1,0 +1,16 @@
+# Derived variables - computed from per-port vars, no need to override
+redis_name: "{{ redis_port }}-redis-{{ service_name }}"
+redis_config_name: "{{ redis_name }}.conf"
+redis_config_path: "{{ config_dir }}/{{ redis_config_name }}"
+db_filename: "{{ redis_name }}.rdb"
+redis_log: /var/log/redis/{{ redis_name }}.log
+
+sentinel_name: "{{ sentinel_port }}-sentinel-{{ service_name }}"
+sentinel_config_name: "{{ sentinel_name }}.conf"
+sentinel_config_path: "{{ config_dir }}/{{ sentinel_config_name }}"
+sentinel_log: /var/log/redis/{{ sentinel_name }}.log
+
+# Defaults that can be overridden per-port
+max_memory: 2gb
+max_memory_policy: allkeys-lru
+exporter_version: "1.62.0"
