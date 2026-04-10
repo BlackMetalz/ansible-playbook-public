@@ -1,0 +1,4 @@
+# Inventory host variables (comma-separated strings)
+# Example in inventory: host-1 sudoers=kienlt members=kienlt,hieupn
+sudoers: ""
+members: ""

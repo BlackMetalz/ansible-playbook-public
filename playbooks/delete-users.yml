@@ -1,0 +1,8 @@
+- hosts: all
+  become: yes
+  pre_tasks:
+    - name: Load user list
+      include_vars:
+        file: "{{ playbook_dir }}/../vars/users.yml"
+  roles:
+    - delete-users

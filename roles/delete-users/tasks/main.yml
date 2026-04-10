@@ -1,0 +1,18 @@
+- name: Validate removed_users is defined
+  assert:
+    that:
+      - removed_users is defined
+      - removed_users | length > 0
+    fail_msg: "removed_users is empty. Nothing to delete."
+    quiet: true
+
+- name: Show users to delete
+  debug:
+    msg: "Deleting: {{ removed_users | join(', ') }}"
+
+- name: Delete removed users (keep home dir)
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: absent
+    remove: no
+  loop: "{{ removed_users }}"

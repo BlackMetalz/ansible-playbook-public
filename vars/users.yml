@@ -1,0 +1,23 @@
+# Global user list - single source of truth
+# Only contains: name + ssh_key
+# Who goes where and who gets sudo -> defined in inventory
+# Password -> defined in vars/users_passwords.yml (vault-encrypted)
+all_managed_users:
+  - name: hieupn17
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: kienlt51
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: user1
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: user2
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: user3
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: maintain_only
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: dba
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+  - name: k8s-maintainer
+    ssh_key: ssh-ed25519 demo-key+holy-key+
+
+removed_users: [dba, k8s-maintainer]

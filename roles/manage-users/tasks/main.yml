@@ -1,0 +1,74 @@
+# Parse comma-separated inventory vars into lists
+- name: Parse user lists from inventory
+  set_fact:
+    _members_list: "{{ (members | string).split(',') | map('trim') | select('ne', '') | list }}"
+    _sudoers_list: "{{ (sudoers | string).split(',') | map('trim') | select('ne', '') | list }}"
+    _all_managed_names: "{{ all_managed_users | map(attribute='name') | list }}"
+    _active_users: "{{ _active_users }}"
+
+# === VALIDATION ===
+- name: Validate inventory config
+  assert:
+    that:
+      - _sudoers_list | difference(_members_list) | length == 0
+      - _members_list | difference(_all_managed_names) | length == 0
+    fail_msg: >-
+      {% if _sudoers_list | difference(_members_list) %}
+      Sudoers not in members: {{ _sudoers_list | difference(_members_list) | join(', ') }}.
+      Fix: add them to members= in inventory.
+      {% endif %}
+      {% if _members_list | difference(_all_managed_names) %}
+      Members not in vars/users.yml: {{ _members_list | difference(_all_managed_names) | join(', ') }}.
+      Fix: add them to all_managed_users.
+      {% endif %}
+    quiet: true
+
+- name: Show user plan
+  debug:
+    msg: "{{ inventory_hostname }} | members: {{ _members_list | join(', ') or 'none' }} | sudoers: {{ _sudoers_list | join(', ') or 'none' }}"
+
+# === CREATE / ENSURE USERS ===
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ 'sudo' if item.name in _sudoers_list else '' }}"
+    append: no
+    shell: /bin/bash
+    create_home: yes
+    state: present
+  loop: "{{ _active_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Set password for sudoers
+  ansible.builtin.user:
+    name: "{{ item }}"
+    password: "{{ user_passwords[item] }}"
+    update_password: always
+  loop: "{{ _sudoers_list }}"
+  when: user_passwords[item] is defined
+  no_log: true
+
+- name: Ensure .ssh directory
+  ansible.builtin.file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0700"
+  loop: "{{ _active_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Deploy SSH authorized keys
+  ansible.builtin.copy:
+    content: "{{ item.ssh_key }}"
+    dest: "/home/{{ item.name }}/.ssh/authorized_keys"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0600"
+  loop: "{{ _active_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  ignore_errors: "{{ ansible_check_mode }}"

@@ -1,0 +1,15 @@
+[all]
+kienlt-lab-machine-1 ansible_host=172.25.110.137  sudoers=kienlt51 members=kienlt51,hieupn17,k8s-maintainer
+kienlt-lab-machine-2 ansible_host=172.25.110.16  sudoers=kienlt51 members=kienlt51,hieupn17,k8s-maintainer
+kienlt-lab-machine-3 ansible_host=172.25.110.235 sudoers=kienlt51,k8s-maintainer members=kienlt51,hieupn17,k8s-maintainer
+kienlt-lab-utilities ansible_host=172.25.110.76 sudoers=kienlt51 members=kienlt51,hieupn17,dba,non-exist
+
+[db]
+kienlt-lab-utilities
+
+[k8s]
+kienlt-lab-machine-1
+kienlt-lab-machine-2
+
+[vip_pro]
+kienlt-lab-machine-3

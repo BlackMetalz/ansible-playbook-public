@@ -1,0 +1,1 @@
+- Ansible load file trong inventory/group_vars/ dựa theo tên group

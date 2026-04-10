@@ -1,0 +1,12 @@
+- hosts: all
+  become: yes
+  pre_tasks:
+    - name: Load user list
+      include_vars:
+        file: "{{ playbook_dir }}/../vars/users.yml"
+
+    - name: Load user passwords
+      include_vars:
+        file: "{{ playbook_dir }}/../vars/users_passwords.yml"
+  roles:
+    - manage-users
