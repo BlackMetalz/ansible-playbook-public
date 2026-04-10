@@ -4,7 +4,10 @@
     _members_list: "{{ (members | string).split(',') | map('trim') | select('ne', '') | list }}"
     _sudoers_list: "{{ (sudoers | string).split(',') | map('trim') | select('ne', '') | list }}"
     _all_managed_names: "{{ all_managed_users | map(attribute='name') | list }}"
-    _active_users: "{{ _active_users }}"
+
+- name: Build active users list
+  set_fact:
+    _active_users: "{{ all_managed_users | selectattr('name', 'in', _members_list) | list }}"
 
 # === VALIDATION ===
 - name: Validate inventory config
