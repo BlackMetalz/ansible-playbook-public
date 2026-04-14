@@ -53,3 +53,7 @@ Static config files live in `roles/haproxy/files/{env}/{group}/haproxy.cfg`. To 
 ### Sentinel notifications
 
 Sentinel failover events trigger a Python notification script (`roles/redis-sentinel/templates/notify_redis.py.j2`) that sends alerts to Telegram.
+
+## Code Style
+
+- **Prefer clarity over DRY.** When simplifying or refactoring, choose clear and readable code even if it means some repetition. Do not introduce complex abstractions just to eliminate duplication.
